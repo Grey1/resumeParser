@@ -1,0 +1,16 @@
+{
+  "bilstm_depth":0,
+  "cnn_maxout_pieces":3,
+  "deprecation_fixes":{
+    "vectors_name":null
+  },
+  "beam_density":0.0,
+  "token_vector_width":96,
+  "beam_update_prob":1.0,
+  "hidden_width":64,
+  "beam_width":1,
+  "pretrained_vectors":null,
+  "maxout_pieces":2,
+  "hidden_depth":1,
+  "nr_class":117
+}
