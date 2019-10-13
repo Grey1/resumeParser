@@ -50,7 +50,6 @@ def trim_entity_spans(data: list) -> list:
 
 
 # training data
-
 TRAIN_DATA = []
 
 with open('./resume_data.json', encoding="utf8") as f:
@@ -58,7 +57,7 @@ with open('./resume_data.json', encoding="utf8") as f:
 
 for index, value in enumerate(data):
     try:
-        temp = (value['content'], {"entities": [( val['points'][0]['start'], val['points'][0]['end'], val['label'][0]  )  for val in value['annotation']] }  )
+        temp = (value['content'], {"entities": [( val['points'][0]['start'], val['points'][0]['end']+1, val['label'][0]  )  for val in value['annotation']] }  )
     except:
         continue
     TRAIN_DATA.append(temp)
@@ -72,7 +71,7 @@ TRAIN_DATA = trim_entity_spans(TRAIN_DATA)
     output_dir=("Optional output directory", "option", "o", Path),
     n_iter=("Number of training iterations", "option", "n", int),
 )
-def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models', n_iter=100):
+def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models', n_iter=10):
     """Load the model, set up the pipeline and train the entity recognizer."""
     if model is not None:
         nlp = spacy.load(model)  # load existing spaCy model
@@ -112,7 +111,7 @@ def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models
                 nlp.update(
                     texts,  # batch of texts
                     annotations,  # batch of annotations
-                    drop=0.5,  # dropout - make it harder to memorise data
+                    drop=0.2,  # dropout - make it harder to memorise data
                     losses=losses,
                 )
             print("Losses", losses)
@@ -120,7 +119,7 @@ def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models
     # test the trained model
     for text, _ in TRAIN_DATA:
         doc = nlp(text)
-        print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+        # print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
         # print("Tokens", [(t.text, t.ent_type_, t.ent_iob) for t in doc])
 
     # save model to output directory
@@ -133,10 +132,10 @@ def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models
 
         # test the saved model
         print("Loading from", output_dir)
-        nlp2 = spacy.load(output_dir)
-        for text, _ in TRAIN_DATA:
-            doc = nlp2(text)
-            print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+        # nlp2 = spacy.load(output_dir)
+        # for text, _ in TRAIN_DATA:
+        #     doc = nlp2(text)
+        #     print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
             # print("Tokens", [(t.text, t.ent_type_, t.ent_iob) for t in doc])
 
 
