@@ -32,7 +32,7 @@ def trim_entity_spans(data: list) -> list:
 
 # training data
 TRAIN_DATA = []
-output_dir = "D:\\resume-entities-for-ner\\models"
+output_dir = "D:\\resume-entities-for-ner\\new-model"
 with open('./resume_data.json', encoding="utf8") as f:
     data = json.load(f)
 
@@ -46,6 +46,6 @@ for index, value in enumerate(data):
 TRAIN_DATA = trim_entity_spans(TRAIN_DATA)
 
 nlp2 = spacy.load(output_dir)
-for text, _ in TRAIN_DATA:
+for text, _ in TRAIN_DATA[2:3]:
     doc = nlp2(text)
     print("Entities", [(ent.text.encode(), ent.label_) for ent in doc.ents])

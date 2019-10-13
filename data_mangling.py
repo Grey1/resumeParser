@@ -57,13 +57,28 @@ with open('./resume_data.json', encoding="utf8") as f:
 
 for index, value in enumerate(data):
     try:
-        temp = (value['content'], {"entities": [( val['points'][0]['start'], val['points'][0]['end']+1, val['label'][0]  )  for val in value['annotation']] }  )
+        temp_dict= {}
+        temp_dict["entities"] = []
+        for val in value['annotation']:
+            if(val['label'][0]!="Name"):
+                temp_dict["entities"].append(
+                    ( val['points'][0]['start'], val['points'][0]['end']+1, val['label'][0] )
+                )
+        temp = (value['content'], {"entities":temp_dict["entities"]      }  )
     except:
         continue
     TRAIN_DATA.append(temp)
 
 TRAIN_DATA = trim_entity_spans(TRAIN_DATA)
-# pprint(TRAIN_DATA)
+
+
+
+TRAIN_DATA.extend([
+    ("having experience of 9 years in",{"entities":[(21,28, "TExp")]}),
+    ("with over 10 years experience in",{"entities":[(10,18, "TExp")]}),
+    ("over 10+ years of experience",{"entities":[(5,14, "TExp")]}),
+    ("10+ years of experience",{"entities":[(0,9, "TExp")]}),
+])
 
 
 @plac.annotations(
@@ -71,7 +86,7 @@ TRAIN_DATA = trim_entity_spans(TRAIN_DATA)
     output_dir=("Optional output directory", "option", "o", Path),
     n_iter=("Number of training iterations", "option", "n", int),
 )
-def main(model="en_core_web_sm", output_dir='D:\\resume-entities-for-ner\\models', n_iter=10):
+def main(model=None, output_dir='D:\\resume-entities-for-ner\\new-model', n_iter=10):
     """Load the model, set up the pipeline and train the entity recognizer."""
     if model is not None:
         nlp = spacy.load(model)  # load existing spaCy model
